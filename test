@@ -1,0 +1,38 @@
+#!/usr/local/bin/perl
+
+
+require "./Challenge.pm";
+
+
+$server = Auth::Challenge->new ('Secret' => 'tanganyika',
+				'Timeout' => 2,
+				'Sync' => 1);
+
+$client = Auth::Challenge->new ('Secret' => 'tanganyika',
+				'Timeout' => 2,
+				'Sync' => 1);
+
+
+print "*** First test: Should produce OK\n";
+$challenge = $server->Challenge;
+print "Challenge 1: $challenge\n";
+print "Response: ", $r = $client->Response($challenge), "\n";
+print $server->Validate($challenge, $r) ? "OK" : "FAIL" , "\t",
+    $server->Error, "\n";
+
+print "*** Second test: Invalid response\n";
+$challenge = $server->Challenge;
+print "Challenge 2: $challenge\n";
+print "Response: ", $r = $client->Response($challenge . "a"), "\n";
+print $server->Validate($challenge, $r) ? "OK" : "FAIL" , "\t",
+    $server->Error, "\n";
+
+print "*** Third test: Client too slow to respond or hijaked connection\n";
+$challenge = $server->Challenge;
+print "Challenge 3: $challenge\n";
+sleep 5;
+print "Response: ", $r = $client->Response($challenge), "\n";
+print $server->Validate($challenge, $r) ? "OK" : "FAIL" , "\t",
+    $server->Error, "\n";
+
+
